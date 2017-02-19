@@ -1,3 +1,4 @@
+import json
 import os
 
 from flask import Flask, redirect
@@ -17,6 +18,7 @@ app = Flask(__name__)
 def hello_world():
     return redirect(url_for('static', filename='car.html'))
 
+
 @app.route('/upload', methods=['POST'])
 def upload():
     doodle = request.form['doodle']
@@ -27,9 +29,14 @@ def upload():
         with open(output_path, "wb") as f:
             f.write(base64.decodestring(b64))
 
-        car_detect.detect(output_path)
+        properties = car_detect.detect(output_path)
 
-    return 'Success'
+        if properties is None:
+            return 'Detection failed'
+        else:
+            return json.dumps(properties)
+
+    return 'Bad request'
 
 
 if __name__ == '__main__':

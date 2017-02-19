@@ -88,7 +88,7 @@ def flood_fill(img, seed, color):
     cv2.floodFill(img, blank_image, seed, color)
 
 
-def extract_wheels(image, circles, output_index=0):
+def extract_wheels(image, circles):
     image = image.copy()
     # convert the (x, y) coordinates and radius of the circles to integers
     circles = np.round(circles[:]).astype("int")
@@ -99,6 +99,7 @@ def extract_wheels(image, circles, output_index=0):
     approxims = []
     wheels = []
     wheel_offsets = []
+    wheel_fname = 'wheel_{}.png'
     # loop over the (x, y) coordinates and radius of the circles
     for j, (x, y, r) in enumerate(circles):
         # crop image
@@ -125,7 +126,7 @@ def extract_wheels(image, circles, output_index=0):
         approx = max_approx[0]
         approx = resize_contour(approx, 1.1)
         contour_list.append(approx)
-        wheels.append(crop(cropped_image, approx, 'wheel_{}_{}.png'.format(j, output_index)))
+        wheels.append(crop(cropped_image, approx, wheel_fname.format(j)))
 
         for i in range(approx.shape[0]):
             approx[i, 0, 0] += x - radius
@@ -148,9 +149,18 @@ def extract_wheels(image, circles, output_index=0):
     fill(image, approxims[0], (255, 255, 255))
     fill(image, approxims[1], (255, 255, 255))
 
-    cv2.imwrite(f('car_without_wheels_{}.png').format(output_index), image)
+    car_fname = 'car_without_wheels.png'
+    cv2.imwrite(f(car_fname), image)
 
-    to_imgs(image, wheels[0][0], wheels[0][1], wheel_offsets[0], wheels[1][0], wheels[1][1], wheel_offsets[1])
+    # to_imgs(image, wheels[0][0], wheels[0][1], wheel_offsets[0], wheels[1][0], wheels[1][1], wheel_offsets[1])
+
+    prop_image = {'src': car_fname, 'x-offset': 0, 'y-offset': 0}
+    prop_wheel1 = {'src': wheel_fname.format(0), 'x-offset': wheel_offsets[0][0], 'y-offset': wheel_offsets[0][1],
+                   'x-center': wheels[0][1][0], 'y-center': wheels[0][1][1]}
+    prop_wheel2 = {'src': wheel_fname.format(1), 'x-offset': wheel_offsets[1][0], 'y-offset': wheel_offsets[1][1],
+                   'x-center': wheels[1][1][0], 'y-center': wheels[1][1][1]}
+
+    return [prop_image, prop_wheel1, prop_wheel2]
 
     # make_gif()
 
@@ -255,16 +265,6 @@ def shift_left(img, x):
     return cv2.warpAffine(img, M, (img.shape[1], img.shape[0]), borderValue=(255, 255, 255, 255))
 
 
-def make_gif():
-    import imageio
-
-    images = []
-    dir = 'animation'
-    for filename in os.listdir(dir):
-        images.append(imageio.imread(os.path.join(dir, filename)))
-    imageio.mimsave('car.gif', images)
-
-
 def to_imgs(body, wheel1, wheel1_center, wheel1_offset, wheel2, wheel2_center, wheel2_offset):
     iterations = 100
     for i in range(iterations):
@@ -286,7 +286,7 @@ def to_imgs(body, wheel1, wheel1_center, wheel1_offset, wheel2, wheel2_center, w
         cv2.imwrite(f('animation/rot_{}.png').format(i), shifted)
 
 
-def process_image(image, output_index):
+def process_image(image):
     output = image.copy()
     gray = cv2.cvtColor(output, cv2.COLOR_BGR2GRAY)
 
@@ -295,7 +295,7 @@ def process_image(image, output_index):
 
     if circles is None:
         print('No wheels detected!')
-        return
+        return None
 
     circles = circles[0]
 
@@ -305,9 +305,9 @@ def process_image(image, output_index):
 
     if len(circles) < 2:
         print('Fewer than two circles detected!')
-        return
+        return None
 
-    extract_wheels(image, circles, output_index)
+    return extract_wheels(image, circles)
 
 
 def replace_transparency(img):
@@ -316,11 +316,16 @@ def replace_transparency(img):
 
 
 def detect(path):
+    """
+
+    :param path: Path of input image
+    :return: Properties of body and wheels
+    """
     img = cv2.imread(path, -1)
     # we want to have a white background, not a transparent
     img = replace_transparency(img)
     cv2.imwrite(f('doodle_mod.png'), img)
-    process_image(img, 0)
+    return process_image(img)
 
 
 if __name__ == '__main__':

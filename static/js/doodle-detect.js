@@ -13,4 +13,11 @@ send_to_server = function ()
     var url = encodeURI('/upload');
     xhr.open('POST', url);
     xhr.send(formdata);
+    xhr.onreadystatechange = function ()
+    {
+        if (xhr.readyState == XMLHttpRequest.DONE)
+        {
+            alert(xhr.responseText);
+        }
+    }
 };
