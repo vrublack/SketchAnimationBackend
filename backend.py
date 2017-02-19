@@ -3,6 +3,7 @@ import os
 
 from flask import Flask, redirect
 from flask import request
+from flask import send_from_directory
 from flask import url_for
 from os.path import join
 import base64
@@ -12,6 +13,12 @@ from werkzeug.utils import secure_filename
 from detect import car_detect
 
 app = Flask(__name__)
+
+
+@app.route('/favicon.ico')
+def favicon():
+    return send_from_directory(os.path.join(app.root_path, 'static'),
+                               'favicon.ico', mimetype='image/vnd.microsoft.icon')
 
 
 @app.route('/')
