@@ -20,10 +20,10 @@ animate_sketch = function (props)
     wheel2.css({left: props[2]['x-offset'] + offsetLeft, top: props[2]['y-offset'] + offsetTop, position: 'absolute'});
     wheel2.attr('src', props[2]['src']);
 
-    var duration = 3000;
-    var rotations = 10;
+    var duration = 5000;
+    var rotations = 7;
     var rotationDeg = rotations * 360 + "deg";
-    var translateX = "1000px";
+    var translateX = "2000px";
 
     wheel1.velocity({
         translateX: translateX,
