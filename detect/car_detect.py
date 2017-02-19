@@ -7,6 +7,8 @@ import os
 # opencv uses BGR
 import sys
 
+from util import f
+
 wheel_color = (171, 186, 211)[::-1]
 body_color = (255, 0, 0)[::-1]
 
@@ -74,7 +76,7 @@ def crop(image, contour, output_fname):
         masked_image = masked_image[:new_dim, :new_dim]
 
     # save the result
-    cv2.imwrite(output_fname, masked_image)
+    cv2.imwrite(f(output_fname), masked_image)
     with open(output_fname + '_.info', 'w') as info:
         info.write('{}x{}'.format(center[0], center[1]))
 
@@ -146,7 +148,7 @@ def extract_wheels(image, circles, output_index=0):
     fill(image, approxims[0], (255, 255, 255))
     fill(image, approxims[1], (255, 255, 255))
 
-    cv2.imwrite('car_without_wheels_{}.png'.format(output_index), image)
+    cv2.imwrite(f('car_without_wheels_{}.png').format(output_index), image)
 
     to_imgs(image, wheels[0][0], wheels[0][1], wheel_offsets[0], wheels[1][0], wheels[1][1], wheel_offsets[1])
 
@@ -281,7 +283,7 @@ def to_imgs(body, wheel1, wheel1_center, wheel1_offset, wheel2, wheel2_center, w
 
         shifted = shift_left(merged, 1000 / iterations * i)
 
-        cv2.imwrite('animation/rot_{}.png'.format(i), shifted)
+        cv2.imwrite(f('animation/rot_{}.png').format(i), shifted)
 
 
 def process_image(image, output_index):
@@ -299,7 +301,7 @@ def process_image(image, output_index):
 
     circles = filter(circles)
 
-    graph(image, circles)
+    # graph(image, circles)
 
     if len(circles) < 2:
         print('Fewer than two circles detected!')
@@ -317,7 +319,7 @@ def detect(path):
     img = cv2.imread(path, -1)
     # we want to have a white background, not a transparent
     img = replace_transparency(img)
-    cv2.imwrite(os.path.join(os.path.dirname(path), 'doodle_mod.png'), img)
+    cv2.imwrite(f('doodle_mod.png'), img)
     process_image(img, 0)
 
 
