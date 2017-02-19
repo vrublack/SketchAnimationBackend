@@ -4,6 +4,14 @@
     <meta charset="UTF-8">
     <title>Car Doodle</title>
 
+    <style>
+        body {
+            background-image: url("quad_paper.png");
+            background-repeat: repeat;
+        }
+    </style>
+
+
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
     <script src="js/sketch.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/velocity/1.4.3/velocity.min.js"></script>
@@ -11,7 +19,7 @@
 </head>
 <body>
 
-<canvas id="canvas" width="1200" height="600" style="background: white; display: block;"></canvas>
+<canvas id="canvas" width="2000" height="1000" style="display: block;"></canvas>
 
 <img id="body" src=""/>
 
@@ -19,9 +27,10 @@
 
 <img id="wheel2" src=""/>
 
-<button style="display: block" onclick='send_to_server()'>
-    Submit
-</button>
+
+<img src="submit.png" onclick="send_to_server()"
+     style="position: absolute; cursor: pointer; bottom: 50px; right: 50px;"/>
+
 
 <script type="text/javascript">
     $(function ()
