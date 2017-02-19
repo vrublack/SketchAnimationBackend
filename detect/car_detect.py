@@ -1,4 +1,6 @@
 # import the necessary packages
+import random
+
 import numpy as np
 import argparse
 import cv2
@@ -7,7 +9,7 @@ import os
 # opencv uses BGR
 import sys
 
-from util import f
+from util import f, f_serve
 
 wheel_color = (171, 186, 211)[::-1]
 body_color = (255, 0, 0)[::-1]
@@ -76,10 +78,7 @@ def crop(image, contour, output_fname):
         masked_image = masked_image[:new_dim, :new_dim]
 
     # save the result
-    cv2.imwrite(f(output_fname), masked_image)
-    with open(output_fname + '_.info', 'w') as info:
-        info.write('{}x{}'.format(center[0], center[1]))
-
+    cv2.imwrite(f_serve(output_fname), masked_image)
     return masked_image, center
 
 
@@ -99,7 +98,7 @@ def extract_wheels(image, circles):
     approxims = []
     wheels = []
     wheel_offsets = []
-    wheel_fname = 'wheel_{}.png'
+    wheel_fname = 'img/wheel_{}_' + str(random.randint(1, 1000000)) + '.png'
     # loop over the (x, y) coordinates and radius of the circles
     for j, (x, y, r) in enumerate(circles):
         # crop image
@@ -149,16 +148,16 @@ def extract_wheels(image, circles):
     fill(image, approxims[0], (255, 255, 255))
     fill(image, approxims[1], (255, 255, 255))
 
-    car_fname = 'car_without_wheels.png'
-    cv2.imwrite(f(car_fname), image)
+    car_fname = 'img/car_without_wheels_{}.png'.format(str(random.randint(1, 1000000)))
+    cv2.imwrite(f_serve(car_fname), image)
 
     # to_imgs(image, wheels[0][0], wheels[0][1], wheel_offsets[0], wheels[1][0], wheels[1][1], wheel_offsets[1])
 
     prop_image = {'src': car_fname, 'x-offset': 0, 'y-offset': 0}
-    prop_wheel1 = {'src': wheel_fname.format(0), 'x-offset': wheel_offsets[0][0], 'y-offset': wheel_offsets[0][1],
-                   'x-center': wheels[0][1][0], 'y-center': wheels[0][1][1]}
-    prop_wheel2 = {'src': wheel_fname.format(1), 'x-offset': wheel_offsets[1][0], 'y-offset': wheel_offsets[1][1],
-                   'x-center': wheels[1][1][0], 'y-center': wheels[1][1][1]}
+    prop_wheel1 = {'src': wheel_fname.format(0), 'y-offset': wheel_offsets[0][0], 'x-offset': wheel_offsets[0][1],
+                   'y-center': wheels[0][1][0], 'x-center': wheels[0][1][1]}
+    prop_wheel2 = {'src': wheel_fname.format(1), 'y-offset': wheel_offsets[1][0], 'x-offset': wheel_offsets[1][1],
+                   'y-center': wheels[1][1][0], 'x-center': wheels[1][1][1]}
 
     return [prop_image, prop_wheel1, prop_wheel2]
 

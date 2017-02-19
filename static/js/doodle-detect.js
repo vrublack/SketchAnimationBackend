@@ -1,3 +1,27 @@
+animate_sketch = function (props)
+{
+    var canvas = $('#canvas');
+    var offsetLeft = canvas.position().left;
+    var offsetTop = canvas.position().top;
+    canvas.hide();
+
+    var body = $('img#body');
+    body.show();
+    body.css({left: offsetLeft, top: offsetTop, position: 'absolute'});
+    body.attr('src', props[0]['src']);
+
+    var wheel1 = $('img#wheel1');
+    wheel1.show();
+    wheel1.css({left: props[1]['x-offset'] + offsetLeft, top: props[1]['y-offset'] + offsetTop, position: 'absolute'});
+    wheel1.attr('src', props[1]['src']);
+
+    var wheel2 = $('img#wheel2');
+    wheel2.show();
+    wheel2.css({left: props[2]['x-offset'] + offsetLeft, top: props[2]['y-offset'] + offsetTop, position: 'absolute'});
+    wheel2.attr('src', props[2]['src']);
+};
+
+
 send_to_server = function ()
 {
     var canvas = document.getElementById("canvas");
@@ -17,7 +41,10 @@ send_to_server = function ()
     {
         if (xhr.readyState == XMLHttpRequest.DONE)
         {
-            alert(xhr.responseText);
+            if (xhr.responseText == 'Bad request' || xhr.responseText == 'Detection failed')
+                alert(xhr.responseText);
+            else
+                animate_sketch(JSON.parse(xhr.responseText))
         }
     }
 };
