@@ -149,6 +149,9 @@ def extract_wheels(image, circles):
     fill(image, approxims[1], (255, 255, 255))
 
     car_fname = 'img/car_without_wheels_{}.png'.format(str(random.randint(1, 1000000)))
+    image = add_alpha(image)
+    # replace white by transparent
+    image[np.where((image == [255, 255, 255, 255]).all(axis=2))] = [0, 0, 0, 0]
     cv2.imwrite(f_serve(car_fname), image)
 
     # to_imgs(image, wheels[0][0], wheels[0][1], wheel_offsets[0], wheels[1][0], wheels[1][1], wheel_offsets[1])
@@ -286,8 +289,14 @@ def to_imgs(body, wheel1, wheel1_center, wheel1_offset, wheel2, wheel2_center, w
 
 
 def process_image(image):
-    output = image.copy()
-    gray = cv2.cvtColor(output, cv2.COLOR_BGR2GRAY)
+    """
+
+    :param imgage: Input image
+    :param image_solid: Image with solid white background instead of transparent background
+    :return: Information about body and 2 wheels or None if detection failed
+    """
+
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
     # detect circles in the image
     circles = cv2.HoughCircles(gray, cv2.HOUGH_GRADIENT, 1.8, 100, param2=70)
@@ -322,9 +331,9 @@ def detect(path):
     """
     img = cv2.imread(path, -1)
     # we want to have a white background, not a transparent
-    img = replace_transparency(img)
-    cv2.imwrite(f('doodle_mod.png'), img)
-    return process_image(img)
+    img_solid = replace_transparency(img)
+    # cv2.imwrite(f('doodle_mod.png'), img_solid)
+    return process_image(img_solid)
 
 
 if __name__ == '__main__':
