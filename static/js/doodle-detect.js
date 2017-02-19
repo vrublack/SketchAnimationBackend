@@ -19,6 +19,35 @@ animate_sketch = function (props)
     wheel2.show();
     wheel2.css({left: props[2]['x-offset'] + offsetLeft, top: props[2]['y-offset'] + offsetTop, position: 'absolute'});
     wheel2.attr('src', props[2]['src']);
+
+    var duration = 3000;
+    var rotations = 10;
+    var rotationDeg = rotations * 360 + "deg";
+    var translateX = "1000px";
+
+    wheel1.velocity({
+        translateX: translateX,
+        rotateZ: rotationDeg
+    }, {
+        duration: duration,
+        easing: "linear"
+    });
+
+    wheel2.velocity({
+        translateX: translateX,
+        rotateZ: rotationDeg
+    }, {
+        duration: duration,
+        easing: "linear"
+    });
+
+    body.velocity({
+        translateX: translateX
+    }, {
+        duration: duration,
+        easing: "linear"
+    });
+
 };
 
 
