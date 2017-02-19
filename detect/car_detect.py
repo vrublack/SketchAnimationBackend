@@ -289,7 +289,7 @@ def process_image(image, output_index):
     gray = cv2.cvtColor(output, cv2.COLOR_BGR2GRAY)
 
     # detect circles in the image
-    circles = cv2.HoughCircles(gray, cv2.HOUGH_GRADIENT, 1.3, 250, param2=70)
+    circles = cv2.HoughCircles(gray, cv2.HOUGH_GRADIENT, 1.8, 100, param2=70)
 
     if circles is None:
         print('No wheels detected!')
@@ -299,7 +299,7 @@ def process_image(image, output_index):
 
     circles = filter(circles)
 
-    # graph(image, circles)
+    graph(image, circles)
 
     if len(circles) < 2:
         print('Fewer than two circles detected!')
@@ -308,9 +308,22 @@ def process_image(image, output_index):
     extract_wheels(image, circles, output_index)
 
 
+def replace_transparency(img):
+    white_background = np.zeros((img.shape[0], img.shape[1], 3), dtype=np.uint8) + 255
+    return blend_transparent(white_background, img)
+
+
+def detect(path):
+    img = cv2.imread(path, -1)
+    # we want to have a white background, not a transparent
+    img = replace_transparency(img)
+    cv2.imwrite(os.path.join(os.path.dirname(path), 'doodle_mod.png'), img)
+    process_image(img, 0)
+
+
 if __name__ == '__main__':
     if len(sys.argv) != 2:
         print('This script takes exactly one argument, which is the input file!')
         exit(1)
-    input_fname = sys.argv[1]
-    process_image(cv2.imread(input_fname), 0)
+    path = sys.argv[1]
+    detect(path)

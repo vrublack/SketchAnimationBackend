@@ -10,16 +10,17 @@
 </head>
 <body>
 
-<button onclick='send_to_server(document.getElementById("canvas").toDataURL("image/png"))'>
-Submit
+<button onclick='send_to_server()'>
+    Submit
 </button>
 
-<canvas id="canvas" width="1200" height="800"></canvas>
+<canvas id="canvas" width="1200" height="800" style="background: white"></canvas>
 
 <script type="text/javascript">
-  $(function() {
-    $('#canvas').sketch();
-  });
+    $(function ()
+    {
+        $('#canvas').sketch();
+    });
 </script>
 
 </body>
